@@ -1,0 +1,272 @@
+<head>
+  <!-- Load TensorFlow.js -->
+  <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@0.12.0"> </script>
+
+  <!-- Place your code in the script tag below. You can also use an external .js file -->
+  <script>
+
+  </script>
+  <style>
+
+  #prediction, #canvas-container{
+    float:left;
+    border: 1px solid black;
+    margin: 0 10px 10px;
+  }
+  #prediction {
+    width: 200px;
+    height: 200px;
+  }
+  #prediction p{
+    font-weight: bold;
+    font-size: 87px;
+    text-align: center;
+    margin: 0;
+  }
+  #controls {
+    clear: both;
+  }
+
+  </style>
+</head>
+
+<body>
+  <p id="demo"></p>
+  <div class="app-body">
+      <button id="AnalyticsEventButton" onclick="myFunction()">Click</button>
+      <div id="AnalyticsResult"></div>
+  </div>
+
+  <!-- <button onclick="myFunction()">Click</button> -->
+  <div id="canvas-container">
+  </div>
+  <div id="prediction">
+  </div>
+
+  <div id="controls">
+      <button id="clear" >Clear</button>
+      <button id="predict" >Tell me the number</button>
+  </div>
+
+  <p id="demo"></p>
+  <p id="first"></p>
+
+  <div>
+    <iframe id="targetFrame"></iframe> 
+  </div>
+
+<!-- <iframe src="https://d5d31c6311ee473ab71586229d6f8118.us-east-1.sumerian.aws/"></iframe> -->
+
+  <iframe src="https://d5d31c6311ee473ab71586229d6f8118.us-east-1.sumerian.aws/"></iframe>
+
+  
+
+
+
+
+
+  <script>
+  
+   
+
+    ( 
+      function () {
+      // Creates a new canvas element and appends it as a child
+      // to the parent element, and returns the reference to
+      // the newly created canvas element
+      var model;
+      async function loadModel() {
+        model = await tf.loadModel('https://s3-ap-southeast-2.amazonaws.com/mystaticdemo/model.json');
+      }
+
+      var random;
+      function myFunction() {
+      random = Math.floor((Math.random()*10));
+      document.getElementById("demo").innerHTML = "Write the number in the box "+random;
+      accept(random);
+      // clear();
+      }
+
+      function createCanvas(parent, width, height) {
+        var canvas = {};
+        canvas.node = document.createElement('canvas');
+        canvas.node.setAttribute('id', 'canvas');
+        canvas.context = canvas.node.getContext('2d');
+        canvas.node.width = width || 200;
+        canvas.node.height = height || 200;
+        parent.appendChild(canvas.node);
+        return canvas;
+      }
+
+      async function init(container, width, height, fillColor) {
+        var canvas = createCanvas(container, width, height);
+        var ctx = canvas.context;
+        //define a custom fillCircle method
+        ctx.fillCircle = function (x, y, radius, fillColor) {
+          this.fillStyle = fillColor;
+          this.beginPath();
+          this.moveTo(x, y);
+          this.arc(x, y, radius, 0, Math.PI * 2, false);
+          this.fill();
+        };
+        ctx.clearTo = function (fillColor) {
+          ctx.fillStyle = fillColor;
+          ctx.fillRect(0, 0, width, height);
+        };
+        ctx.clearTo(fillColor || "#ffffff");
+
+        // bind mouse events
+        canvas.node.onmousemove = function (e) {
+          if (!canvas.isDrawing) {
+            return;
+          }
+          var x = e.pageX - this.offsetLeft;
+          var y = e.pageY - this.offsetTop;
+          var radius = 3; // or whatever
+          var fillColor = '#000000';
+          ctx.fillCircle(x, y, radius, fillColor);
+        };
+        canvas.node.onmousedown = function (e) {
+          canvas.isDrawing = true;
+        };
+        canvas.node.onmouseup = function (e) {
+          canvas.isDrawing = false;
+        };
+        loadModel();
+      }
+
+      function predict(tfImage) {
+        var output = model.predict(tfImage);
+        var result = Array.from(output.dataSync());
+        console.log('Output is : ', Array.from(output.dataSync())); 
+        var maxPossibility = result.reduce(function(a,b){return Math.max(a,b)});
+        console.log(maxPossibility);
+        document.getElementById('prediction').innerHTML =  '<p>'
+          + result.indexOf(maxPossibility) + '</p>'; 
+        console.log("max ", result.indexOf(maxPossibility), random)
+        if(result.indexOf(maxPossibility) == random) {
+          console.log("right")
+          document.getElementById('prediction').style.color = "green"; 
+        } else {
+          console.log("right")
+          document.getElementById('prediction').style.color = "red"; 
+        }
+      }
+
+      function accept(j)
+      {
+         switch (j) {
+        case 0: 
+            test("https://d5d31c6311ee473ab71586229d6f8118.us-east-1.sumerian.aws/"); 
+            var audio = new Audio('0.wav');
+            audio.play();
+            break;
+          
+        case 1: 
+          test("https://d5d31c6311ee473ab71586229d6f8118.us-east-1.sumerian.aws/");
+          var audio = new Audio('1.wav');
+          audio.play();
+          break;
+          
+        case 2: 
+          test("https://d5d31c6311ee473ab71586229d6f8118.us-east-1.sumerian.aws/");
+          var audio = new Audio('2.wav');     
+          audio.play(); 
+          break;
+        
+           case 2: 
+          test("https://d5d31c6311ee473ab71586229d6f8118.us-east-1.sumerian.aws/");
+          var audio = new Audio('3.wav');     
+          audio.play(); 
+          break;
+        
+           case 3: 
+          test("https://d5d31c6311ee473ab71586229d6f8118.us-east-1.sumerian.aws/");
+          var audio = new Audio('4.wav');     
+          audio.play(); 
+          break;
+        
+           case 4: 
+          test("https://d5d31c6311ee473ab71586229d6f8118.us-east-1.sumerian.aws/");
+          var audio = new Audio('5.wav');     
+          audio.play(); 
+          break;
+        
+           case 5: 
+          test("https://d5d31c6311ee473ab71586229d6f8118.us-east-1.sumerian.aws/");
+          var audio = new Audio('6.wav');     
+          audio.play(); 
+          break;
+        
+           case 6: 
+          test("https://d5d31c6311ee473ab71586229d6f8118.us-east-1.sumerian.aws/");
+          var audio = new Audio('6.wav');     
+          audio.play(); 
+          break;
+        
+           case 7: 
+          test("https://d5d31c6311ee473ab71586229d6f8118.us-east-1.sumerian.aws/");
+          var audio = new Audio('7.wav');     
+          audio.play(); 
+          break;
+        
+           case 8: 
+          test("https://d5d31c6311ee473ab71586229d6f8118.us-east-1.sumerian.aws/");
+          var audio = new Audio('8.wav');     
+          audio.play(); 
+          break;
+        
+         case 9: 
+          test("https://d5d31c6311ee473ab71586229d6f8118.us-east-1.sumerian.aws/");
+          var audio = new Audio('9.wav');     
+          audio.play(); 
+          break;
+        
+
+
+        }
+      }
+      function test(src)
+      {
+        console.log("test going in ", src)
+        document.getElementById("targetFrame").src =src;
+      }
+      function clear() {
+        console.log('clear canvas');
+        var canvas = document.getElementById('canvas');
+        var ctx = canvas.getContext('2d');
+        ctx.clearTo('#ffffff');
+        document.getElementById('prediction').innerHTML = '';
+      }
+      function recogniseNumber() {
+        var canvas = document.getElementById('canvas');
+        var ctx = canvas.getContext('2d');
+
+        // console.log(ctx.getImageData(0,0, 100, 100));
+        var imageData = ctx.getImageData(0, 0, 200, 200);
+        var tfImage = tf.fromPixels(imageData, 1);
+
+        //Resize to 28X28
+        var tfResizedImage = tf.image.resizeBilinear(tfImage, [28,28]);
+        //Since white is 255 black is 0 so need to revert the values 
+        //so that white is 0 and black is 255 
+        tfResizedImage = tf.cast(tfResizedImage, 'float32');
+        tfResizedImage = tf.abs(tfResizedImage.sub(tf.scalar(255)))
+          .div(tf.scalar(255)).flatten();
+        tfResizedImage = tfResizedImage.reshape([1, 784]);
+
+        //Make another dimention as the model expects 
+        console.log(tfResizedImage.dataSync());
+        console.log(tfResizedImage.toString()) ;
+        predict(tfResizedImage);
+      }      
+
+      var container = document.getElementById('canvas-container');
+      init(container, 200, 200, '#ffffff');
+      document.getElementById('clear').addEventListener('click', clear);
+      document.getElementById('predict').addEventListener('click', recogniseNumber);
+
+
+    })();
+  </script>
+</body>
